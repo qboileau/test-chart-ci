@@ -39,7 +39,7 @@ jobs:
       - name: Update chart version
         run: |
           yq --version
-          yq e -i '.version = strenv(${{ inputs.version }})' ./charts/${{ inputs.chart }}/chart.yaml
+          yq e -i '.version = strenv(${{ inputs.version }})' ./charts/${{ inputs.chart }}/Chart.yaml
 
       - name: Commit chart version update
         id: commit
