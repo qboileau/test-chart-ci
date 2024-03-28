@@ -1,4 +1,4 @@
-name-template: "constest-chartole-$RESOLVED_VERSION"
+name-template: "test-chart-$RESOLVED_VERSION"
 tag-template: "test-chart-$RESOLVED_VERSION"
 
 include-paths:
