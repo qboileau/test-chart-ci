@@ -22,3 +22,4 @@ jobs:
         with:
           config-name: "release-drafter/test-chart.yaml"
           publish: false
+          token: ${{ secrets.GITHUB_TOKEN }}
