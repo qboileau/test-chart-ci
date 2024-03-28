@@ -38,8 +38,10 @@ jobs:
 
       - name: Update chart version
         uses: mikefarah/yq@master
+        env:
+          VERSION: ${{ inputs.version }}
         with:
-          cmd: yq e -i -v '.version = strenv(${{ inputs.version }})' ./charts/${{ inputs.chart }}/Chart.yaml
+          cmd: yq e -i -v '.version = env(VERSION)' ./charts/${{ inputs.chart }}/Chart.yaml
 
       - name: Commit chart version update
         id: commit
