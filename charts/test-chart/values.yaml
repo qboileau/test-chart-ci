@@ -1,4 +1,4 @@
-## @section Parameters
+## @section All Parameters
 ## @descriptionStart
 ## Global Docker image parameters
 ## Please, note that this will override the image parameters, including dependencies, configured to use the global value
@@ -46,7 +46,8 @@ podLabels: {}
 
 ## @param podSecurityContext podSecurityContext
 podSecurityContext: {}
-# fsGroup: 2000
+## @param fsGroup fsGroup
+fsGroup: 2000
 
 ## @param securityContext securityContext
 securityContext:
@@ -77,10 +78,10 @@ ingress:
 
   ## @param ingress.hosts [array] hosts
   hosts:
-    - ## @param ingress.hosts[0].host hostname
+    -  ## @param ingress.hosts[0].host hostname
       host: chart-example.local
       paths:
-        - ## @param ingress.hosts[0].paths[0].path path
+        -  ## @param ingress.hosts[0].paths[0].path path
           path: /
           pathType: ImplementationSpecific
 

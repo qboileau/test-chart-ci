@@ -2,7 +2,7 @@
 
 ## Parameters
 
-### Parameters
+### All Parameters
 
 Global Docker image parameters
 Please, note that this will override the image parameters, including dependencies, configured to use the global value
@@ -24,6 +24,7 @@ Current available global Docker image parameters: imageRegistry, imagePullSecret
 | `podAnnotations`                             | podAnnotations                             | `{}`           |
 | `podLabels`                                  | podLabels                                  | `{}`           |
 | `podSecurityContext`                         | podSecurityContext                         | `{}`           |
+| `fsGroup`                                    | fsGroup                                    | `2000`         |
 | `securityContext`                            | securityContext                            | `{}`           |
 | `service.type`                               | service.type                               | `ClusterIP`    |
 | `service.port`                               | service.port                               | `80`           |
