@@ -1,5 +1,5 @@
 name: Create release
-run-name: Release created for ${{ inputs.chart }}:${{ inputs.version }} by @${{ github.actor }}
+run-name: ${{ inputs.publish == true && '' || 'Draft' }} Release created for ${{ inputs.chart }}:${{ inputs.version }} by @${{ github.actor }}
 
 on:
   workflow_dispatch:
@@ -48,7 +48,8 @@ jobs:
           git config user.email "$GITHUB_ACTOR@users.noreply.github.com"
           git commit -am "Update chart${{ inputs.chart }} version to ${{ inputs.version }}"
           git push
-          echo "commit_sha1=${git rev-parse HEAD}" >> "${GITHUB_OUTPUT}"
+          update_commit=$(git rev-parse HEAD)
+          echo "commit_sha1=${update_commit}" >> "${GITHUB_OUTPUT}"
 
       - name: ${{ inputs.chart }} Release Drafter
         uses: release-drafter/release-drafter@v5
