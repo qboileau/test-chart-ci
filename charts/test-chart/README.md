@@ -2,7 +2,7 @@
 
 ## Parameters
 
-### Parameters
+### All Parameters
 
 Global Docker image parameters
 Please, note that this will override the image parameters, including dependencies, configured to use the global value
