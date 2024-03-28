@@ -1,3 +1,6 @@
+name-template: "test-chart-$RESOLVED_VERSION"
+tag-template: "test-chart-$RESOLVED_VERSION"
+
 include-paths:
   - charts/test-chart
 

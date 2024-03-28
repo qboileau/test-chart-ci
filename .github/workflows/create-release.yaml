@@ -41,7 +41,7 @@ jobs:
         env:
           VERSION: ${{ inputs.version }}
         with:
-          cmd: yq e -i -v '.version = env(VERSION)' ./charts/${{ inputs.chart }}/Chart.yaml
+          cmd: yq e -i '.version = env(VERSION)' ./charts/${{ inputs.chart }}/Chart.yaml
 
       - name: Commit chart version update
         id: commit
@@ -61,8 +61,9 @@ jobs:
         with:
           config-name: "release-drafter/${{ inputs.chart }}.yaml"
           publish: ${{ inputs.publish }}
-          name-template: "${{ inputs.chart }}-${{ inputs.version }}"
-          tag-template: "${{ inputs.chart }}-${{ inputs.version }}"
+          version: ${{ inputs.version }}
+          name: "${{ inputs.chart }}-${{ inputs.version }}"
+          tag: "${{ inputs.chart }}-${{ inputs.version }}"
           latest: true
           commitish: ${{ steps.commit.outputs.commit_sha1 }}
           token: ${{ secrets.GITHUB_TOKEN }}
