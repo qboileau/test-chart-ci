@@ -48,6 +48,7 @@ jobs:
           if git status -s | grep -E 'charts/.*/README.md'; then
             git diff
             echo "::error title=README::README need to be re-generated !"
+            exit 1
           fi
 
   chart-linting:
