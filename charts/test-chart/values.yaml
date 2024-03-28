@@ -46,7 +46,8 @@ podLabels: {}
 
 ## @param podSecurityContext podSecurityContext
 podSecurityContext: {}
-# fsGroup: 2000
+## @param fsGroup fsGroup
+fsGroup: 2000
 
 ## @param securityContext securityContext
 securityContext:
