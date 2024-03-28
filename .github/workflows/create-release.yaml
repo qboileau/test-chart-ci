@@ -61,6 +61,8 @@ jobs:
         with:
           config-name: "release-drafter/${{ inputs.chart }}.yaml"
           publish: ${{ inputs.publish }}
+          name-template: "${{ inputs.chart }}@${{ inputs.version }}"
+          tag-template: "${{ inputs.chart }}@${{ inputs.version }}"
           latest: true
           commitish: ${{ steps.commit.outputs.commit_sha1 }}
           token: ${{ secrets.GITHUB_TOKEN }}
