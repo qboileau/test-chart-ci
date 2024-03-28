@@ -78,10 +78,10 @@ ingress:
 
   ## @param ingress.hosts [array] hosts
   hosts:
-    - ## @param ingress.hosts[0].host hostname
+    -  ## @param ingress.hosts[0].host hostname
       host: chart-example.local
       paths:
-        - ## @param ingress.hosts[0].paths[0].path path
+        -  ## @param ingress.hosts[0].paths[0].path path
           path: /
           pathType: ImplementationSpecific
 
