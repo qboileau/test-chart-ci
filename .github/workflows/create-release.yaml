@@ -37,17 +37,20 @@ jobs:
           fetch-depth: 0
 
       - name: Update chart version
-        run: |
-          yq --version
-          yq e -i '.version = strenv(${{ inputs.version }})' ./charts/${{ inputs.chart }}/Chart.yaml
+        uses: mikefarah/yq@master
+        with:
+          cmd: yq e -i -v '.version = strenv(${{ inputs.version }})' ./charts/${{ inputs.chart }}/Chart.yaml
 
       - name: Commit chart version update
         id: commit
         run: |
           git config user.name "$GITHUB_ACTOR"
           git config user.email "$GITHUB_ACTOR@users.noreply.github.com"
+
+          git diff
           git commit -am "Update chart ${{ inputs.chart }} version to ${{ inputs.version }}"
           git push
+
           update_commit=$(git rev-parse HEAD)
           echo "commit_sha1=${update_commit}" >> "${GITHUB_OUTPUT}"
 
