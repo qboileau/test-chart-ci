@@ -1,0 +1,61 @@
+name: Create release
+run-name: Release created for ${{ inputs.chart }}:${{ inputs.version }} by @${{ github.actor }}
+
+on:
+  workflow_dispatch:
+    inputs:
+      chart:
+        type: choice
+        description: Chart to release
+        required: true
+        default: test-chart
+        options:
+          - test-chart
+      version:
+        type: string
+        description: Chart version to release
+        required: true
+      publish:
+        type: boolean
+        description: Publish the release or just draft it
+        required: false
+        default: true
+
+permissions:
+  contents: read
+
+jobs:
+  create-release:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+      - uses: chrisdickinson/setup-yq@latest
+
+      - name: Update chart version
+        run: |
+          yq --version
+          yq e -i '.version = strenv(${{ inputs.version }})' ./charts/${{ inputs.chart }}/chart.yaml
+
+      - name: Commit chart version update
+        id: commit
+        run: |
+          git config user.name "$GITHUB_ACTOR"
+          git config user.email "$GITHUB_ACTOR@users.noreply.github.com"
+          git commit -am "Update chart${{ inputs.chart }} version to ${{ inputs.version }}"
+          git push
+          echo "commit_sha1=${git rev-parse HEAD}" >> "${GITHUB_OUTPUT}"
+
+      - name: ${{ inputs.chart }} Release Drafter
+        uses: release-drafter/release-drafter@v5
+        with:
+          config-name: "release-drafter/${{ inputs.chart }}.yaml"
+          publish: ${{ inputs.publish }}
+          latest: true
+          commitish: ${{ steps.commit.outputs.commit_sha1 }}
+          token: ${{ secrets.GITHUB_TOKEN }}
