@@ -24,6 +24,7 @@ Current available global Docker image parameters: imageRegistry, imagePullSecret
 | `podAnnotations`                             | podAnnotations                             | `{}`           |
 | `podLabels`                                  | podLabels                                  | `{}`           |
 | `podSecurityContext`                         | podSecurityContext                         | `{}`           |
+| `fsGroup`                                    | fsGroup                                    | `2000`         |
 | `securityContext`                            | securityContext                            | `{}`           |
 | `service.type`                               | service.type                               | `ClusterIP`    |
 | `service.port`                               | service.port                               | `80`           |
