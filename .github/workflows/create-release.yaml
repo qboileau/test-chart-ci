@@ -105,6 +105,8 @@ jobs:
           echo "$repo"
           ls -al ./charts/${{ inputs.chart }}/.cr-release-packages
 
+          mkdir -p .cr-index
+
           docker run \
             --user "${UID}:${GID}" \
             --workdir /workdir \
