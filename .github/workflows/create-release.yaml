@@ -95,34 +95,51 @@ jobs:
           file: ${{ steps.package.outputs.package_file }}
           tag: ${{ steps.release.outputs.tag_name }}
 
-      - name: Checkout gh-pages
-        uses: actions/checkout@v3
-        with:
-          path: "pages"
-          ref: "gh-pages"
-          fetch-depth: 0
-
       - name: Update helm index
-        working-directory: pages
+        working-directory: main
         run: |
           owner=$(cut -d '/' -f 1 <<< "$GITHUB_REPOSITORY")
           repo=$(cut -d '/' -f 2 <<< "$GITHUB_REPOSITORY")
+
+          cat "$owner"
+          cat "$repo"
+          ls -al ${{ env.CHART_DIR }}/.cr-release-packages
+
           docker run \
             --user "${UID}:${GID}" \
             --workdir /workdir \
-            -v $(pwd)/..:/workdir \
+            -v $(pwd):/workdir \
             quay.io/helmpack/chart-releaser \
-            index -i ./index.yaml -r "$repo" -o "$owner" --package-path ../${{ env.CHART_DIR }}/.cr-release-packages --token ${{ env.GITHUB_TOKEN }}
+            index --push -r "$repo" -o "$owner" --pages-branch gh-pages  --pages-index-path index.yaml --package-path ${{ env.CHART_DIR }}/.cr-release-packages --token ${{ env.GITHUB_TOKEN }}
 
-          cat index.yaml
+      # - name: Checkout gh-pages
+      #   uses: actions/checkout@v3
+      #   with:
+      #     path: "pages"
+      #     ref: "gh-pages"
+      #     fetch-depth: 0
 
-      - name: Push index
-        working-directory: pages
-        run: |
-          git config user.name "$GITHUB_ACTOR"
-          git config user.email "$GITHUB_ACTOR@users.noreply.github.com"
+      # - name: Update helm index
+      #   working-directory: pages
+      #   run: |
+      #     owner=$(cut -d '/' -f 1 <<< "$GITHUB_REPOSITORY")
+      #     repo=$(cut -d '/' -f 2 <<< "$GITHUB_REPOSITORY")
+      #     docker run \
+      #       --user "${UID}:${GID}" \
+      #       --workdir /workdir \
+      #       -v $(pwd)/..:/workdir \
+      #       quay.io/helmpack/chart-releaser \
+      #       index -i ./index.yaml -r "$repo" -o "$owner" --package-path ../${{ env.CHART_DIR }}/.cr-release-packages --token ${{ env.GITHUB_TOKEN }}
 
-          git diff
-          git add index.yaml
-          git commit -m "Updated from ref: $GITHUB_SHA"
-          git push
+      #     cat index.yaml
+
+      # - name: Push index
+      #   working-directory: pages
+      #   run: |
+      #     git config user.name "$GITHUB_ACTOR"
+      #     git config user.email "$GITHUB_ACTOR@users.noreply.github.com"
+
+      #     git diff
+      #     git add index.yaml
+      #     git commit -m "Updated from ref: $GITHUB_SHA"
+      #     git push
