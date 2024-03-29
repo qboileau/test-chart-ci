@@ -27,6 +27,7 @@ jobs:
       RELEASE_NAME: "${{ inputs.chart }}-${{ inputs.version }}"
       RELEASE_TAG: "${{ inputs.chart }}-${{ inputs.version }}"
       CHART_DIR: "./main/charts/${{ inputs.chart }}"
+      HELM_REPO_PUBLIC_URL: "https://musical-adventure-wo4898k.pages.github.io/"
     steps:
       - name: Checkout main
         uses: actions/checkout@v3
@@ -104,13 +105,14 @@ jobs:
       - name: Update helm index
         working-directory: pages
         run: |
-          mv index.yaml previous.yaml
-          helm repo index . --url ${{ steps.upload.outputs.browser_download_url }} --merge previous.yaml
-          echo "Previous index"
-          cat previous.yaml
-          echo "New index"
+          docker run \
+            --user "${UID}:${GID}" \
+            --workdir /pages \
+            -v $(pwd):/pages \
+            quay.io/helmpack/chart-releaser \
+            index -i ./index.yaml -r test-chart-ci -o conduktor
+
           cat index.yaml
-          rm previous.yaml
 
       - name: Push index
         working-directory: pages
