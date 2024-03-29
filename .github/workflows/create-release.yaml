@@ -1,5 +1,5 @@
 name: Create release
-run-name: Create ${{ inputs.publish == 'true' && 'published' || 'draft' }} release ${{ inputs.chart }}:${{ inputs.version }} by @${{ github.actor }}
+run-name: Create release ${{ inputs.chart }}:${{ inputs.version }} by @${{ github.actor }}
 
 on:
   workflow_dispatch:
@@ -15,11 +15,6 @@ on:
         type: string
         description: Chart version to release
         required: true
-      publish:
-        type: boolean
-        description: Publish the release or just draft it
-        required: false
-        default: true
 
 permissions:
   contents: write
@@ -72,7 +67,7 @@ jobs:
           docker run \
             --user "${UID}:${GID}" \
             --workdir /chart \
-            -v ${{ env.CHART_DIR }}:/chart
+            -v ${{ env.CHART_DIR }}:/chart \
             quay.io/helmpack/chart-releaser \
             package /chart --package-path .cr-release-packages
 
