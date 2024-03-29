@@ -103,7 +103,7 @@ jobs:
 
           echo "$owner"
           echo "$repo"
-          ls -al ${{ env.CHART_DIR }}/.cr-release-packages
+          ls -al ./charts/${{ inputs.chart }}/.cr-release-packages
 
           docker run \
             --user "${UID}:${GID}" \
