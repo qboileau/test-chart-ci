@@ -101,8 +101,8 @@ jobs:
           owner=$(cut -d '/' -f 1 <<< "$GITHUB_REPOSITORY")
           repo=$(cut -d '/' -f 2 <<< "$GITHUB_REPOSITORY")
 
-          cat "$owner"
-          cat "$repo"
+          echo "$owner"
+          echo "$repo"
           ls -al ${{ env.CHART_DIR }}/.cr-release-packages
 
           docker run \
