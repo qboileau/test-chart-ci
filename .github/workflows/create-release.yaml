@@ -70,7 +70,7 @@ jobs:
         run: |
           id
           docker run \
-            --user "$UID:$GID"
+            --user "${UID}:${GID}" \
             --workdir /chart \
             -v ${{ env.CHART_DIR }}:/chart
             quay.io/helmpack/chart-releaser \
