@@ -110,7 +110,7 @@ jobs:
             --workdir /workdir \
             -v $(pwd):/workdir \
             quay.io/helmpack/chart-releaser \
-            index --push -r "$repo" -o "$owner" --pages-branch gh-pages  --pages-index-path index.yaml --package-path ${{ env.CHART_DIR }}/.cr-release-packages --token ${{ env.GITHUB_TOKEN }}
+            index --push -r "$repo" -o "$owner" --pages-branch gh-pages  --pages-index-path index.yaml --package-path ./charts/${{ inputs.chart }}/.cr-release-packages --token ${{ env.GITHUB_TOKEN }}
 
       # - name: Checkout gh-pages
       #   uses: actions/checkout@v3
