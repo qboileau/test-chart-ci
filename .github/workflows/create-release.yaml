@@ -110,7 +110,7 @@ jobs:
             --workdir /pages \
             -v $(pwd):/pages \
             quay.io/helmpack/chart-releaser \
-            index -i ./index.yaml -r test-chart-ci -o conduktor
+            index -i ./index.yaml -r test-chart-ci -o conduktor --token ${{ secrets.GITHUB_TOKEN }}
 
           cat index.yaml
 
