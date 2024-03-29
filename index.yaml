@@ -1,4 +1,14 @@
-# Helm repository index
 apiVersion: v1
-entries: {}
-generated: "2024-03-29T15:07:17.666701129+01:00"
+entries:
+  test-chart:
+  - apiVersion: v2
+    appVersion: 1.16.0
+    created: "2024-03-29T15:42:37.37328541Z"
+    description: A Helm chart for Kubernetes
+    digest: c96691ea204e1c1efe9aee79c55853b10d762969c52a9b66162b534b12c6fb66
+    name: test-chart
+    type: application
+    urls:
+    - https://github.com/qboileau/test-chart-ci/releases/download/test-chart-0.3.6/test-chart-0.3.6.tgz
+    version: 0.3.6
+generated: "2024-03-29T15:42:37.373296871Z"
