@@ -112,7 +112,7 @@ jobs:
             --workdir /pages \
             -v $(pwd):/pages \
             quay.io/helmpack/chart-releaser \
-            index -i ./index.yaml -r "$repo" -o "$owner" --package-path --token ${{ env.GITHUB_TOKEN }}
+            index -i ./index.yaml -r "$repo" -o "$owner" --token ${{ env.GITHUB_TOKEN }}
 
           cat index.yaml
 
