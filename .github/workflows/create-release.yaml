@@ -1,5 +1,5 @@
 name: Create release
-run-name: ${{ inputs.publish == 'true' && '' || 'Draft' }} Release created for ${{ inputs.chart }}:${{ inputs.version }} by @${{ github.actor }}
+run-name: Create ${{ inputs.publish == 'true' && 'published' || 'draft' }} release ${{ inputs.chart }}:${{ inputs.version }} by @${{ github.actor }}
 
 on:
   workflow_dispatch:
@@ -26,27 +26,39 @@ permissions:
   pull-requests: write
 
 jobs:
-  github-release:
+  create-release:
     runs-on: ubuntu-latest
+    env:
+      RELEASE_NAME: "${{ inputs.chart }}-${{ inputs.version }}"
+      RELEASE_TAG: "${{ inputs.chart }}-${{ inputs.version }}"
+      CHART_DIR: "./main/charts/${{ inputs.chart }}"
     steps:
-      - name: Checkout
+      - name: Checkout main
         uses: actions/checkout@v3
         with:
+          path: "main"
           fetch-depth: 0
+
+      - name: Configure Git
+        run: |
+          git config user.name "$GITHUB_ACTOR"
+          git config user.email "$GITHUB_ACTOR@users.noreply.github.com"
+
+      - name: Install Helm
+        uses: azure/setup-helm@v3
+        with:
+          version: "v3.10.1"
 
       - name: Update chart version
         uses: mikefarah/yq@master
         env:
           VERSION: ${{ inputs.version }}
         with:
-          cmd: yq e -i '.version = env(VERSION)' ./charts/${{ inputs.chart }}/Chart.yaml
+          cmd: yq e -i '.version = env(VERSION)' ${{ env.CHART_DIR }}/Chart.yaml
 
       - name: Commit chart version update
         id: commit
         run: |
-          git config user.name "$GITHUB_ACTOR"
-          git config user.email "$GITHUB_ACTOR@users.noreply.github.com"
-
           git diff
           git commit -am "Update chart ${{ inputs.chart }} version to ${{ inputs.version }}"
           git push
@@ -54,20 +66,61 @@ jobs:
           update_commit=$(git rev-parse HEAD)
           echo "commit_sha1=${update_commit}" >> "${GITHUB_OUTPUT}"
 
-      - name: ${{ inputs.chart }} Release Drafter
+      - name: Package chart ${{ inputs.chart }}
+        id: package
+        run: |
+          id
+          docker run \
+            --user "$UID:$GID"
+            --workdir /chart \
+            -v ${{ env.CHART_DIR }}:/chart
+            quay.io/helmpack/chart-releaser \
+            package /chart --package-path .cr-release-packages
+
+          echo "package_file=${{ env.CHART_DIR }}/.cr-release-packages/${{ inputs.chart }}-${{ inputs.version }}.tgz" >> "${GITHUB_OUTPUT}"
+
+      - name: Create github release ${{ env.RELEASE_NAME }}
+        id: release
         uses: release-drafter/release-drafter@v5
         with:
           config-name: "release-drafter/${{ inputs.chart }}.yaml"
-          publish: false
+          publish: true
           version: ${{ inputs.version }}
-          name: "${{ inputs.chart }}-${{ inputs.version }}"
-          tag: "${{ inputs.chart }}-${{ inputs.version }}"
+          name: "${{ env.RELEASE_NAME }}"
+          tag: "${{ env.RELEASE_TAG }}"
           latest: true
           commitish: ${{ steps.commit.outputs.commit_sha1 }}
           token: ${{ secrets.GITHUB_TOKEN }}
 
-  chart-release:
-    if: ${{ inputs.publish }}
-    uses: ./.github/workflows/release.yaml
-    secrets: inherit
-    needs: [github-release]
+      - name: Upload package chart to release
+        id: upload
+        uses: svenstaro/upload-release-action@v2
+        with:
+          repo_token: ${{ secrets.GITHUB_TOKEN }}
+          file: ${{ steps.package.outputs.package_file }}
+          tag: ${{ steps.release.outputs.tag_name }}
+
+      - name: Checkout gh-pages
+        uses: actions/checkout@v3
+        with:
+          path: "pages"
+          ref: "gh-pages"
+          fetch-depth: 0
+
+      - name: Update helm index
+        working-directory: pages
+        run: |
+          mv index.yaml previous.yaml
+          helm repo index . --url ${{ steps.upload.outputs.browser_download_url }} --merge previous.yaml
+          echo "Previous index"
+          cat previous.yaml
+          echo "New index"
+          cat index.yaml
+          rm previous.yaml
+
+      - name: Push index
+        working-directory: pages
+        run: |
+          git add index.yaml
+          git commit -m "Updated from ref: $GITHUB_SHA"
+          git push
