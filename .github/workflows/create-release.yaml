@@ -105,12 +105,14 @@ jobs:
       - name: Update helm index
         working-directory: pages
         run: |
+          owner=$(cut -d '/' -f 1 <<< "$GITHUB_REPOSITORY")
+          repo=$(cut -d '/' -f 2 <<< "$GITHUB_REPOSITORY")
           docker run \
             --user "${UID}:${GID}" \
             --workdir /pages \
             -v $(pwd):/pages \
             quay.io/helmpack/chart-releaser \
-            index -i ./index.yaml -r test-chart-ci -o conduktor --package-path ../${{env.CHART_DIR}}/.cr-release-packages --packages-with-index --token ${{ env.GITHUB_TOKEN }}
+            index -i ./index.yaml -r "$repo" -o "$owner" --package-path --token ${{ env.GITHUB_TOKEN }}
 
           cat index.yaml
 
