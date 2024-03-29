@@ -28,6 +28,7 @@ jobs:
       RELEASE_TAG: "${{ inputs.chart }}-${{ inputs.version }}"
       CHART_DIR: "./main/charts/${{ inputs.chart }}"
       HELM_REPO_PUBLIC_URL: "https://musical-adventure-wo4898k.pages.github.io/"
+      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     steps:
       - name: Checkout main
         uses: actions/checkout@v3
@@ -85,13 +86,12 @@ jobs:
           tag: "${{ env.RELEASE_TAG }}"
           latest: true
           commitish: ${{ steps.commit.outputs.commit_sha1 }}
-          token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Upload package chart to release
         id: upload
         uses: svenstaro/upload-release-action@v2
         with:
-          repo_token: ${{ secrets.GITHUB_TOKEN }}
+          repo_token: ${{ env.GITHUB_TOKEN }}
           file: ${{ steps.package.outputs.package_file }}
           tag: ${{ steps.release.outputs.tag_name }}
 
@@ -110,7 +110,7 @@ jobs:
             --workdir /pages \
             -v $(pwd):/pages \
             quay.io/helmpack/chart-releaser \
-            index -i ./index.yaml -r test-chart-ci -o conduktor --token ${{ secrets.GITHUB_TOKEN }}
+            index -i ./index.yaml -r test-chart-ci -o conduktor --package-path ../${{env.CHART_DIR}} --packages-with-index --token ${{ env.GITHUB_TOKEN }}
 
           cat index.yaml
 
