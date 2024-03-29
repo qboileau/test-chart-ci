@@ -1,5 +1,5 @@
 name: Create release
-run-name: ${{ inputs.publish == true && '' || 'Draft' }} Release created for ${{ inputs.chart }}:${{ inputs.version }} by @${{ github.actor }}
+run-name: ${{ inputs.publish && '' || 'Draft' }} Release created for ${{ inputs.chart }}:${{ inputs.version }} by @${{ github.actor }}
 
 on:
   workflow_dispatch:
@@ -25,7 +25,7 @@ permissions:
   contents: read
 
 jobs:
-  create-release:
+  github-release:
     runs-on: ubuntu-latest
     permissions:
       contents: write
@@ -60,10 +60,16 @@ jobs:
         uses: release-drafter/release-drafter@v5
         with:
           config-name: "release-drafter/${{ inputs.chart }}.yaml"
-          publish: ${{ inputs.publish }}
+          publish: false
           version: ${{ inputs.version }}
           name: "${{ inputs.chart }}-${{ inputs.version }}"
           tag: "${{ inputs.chart }}-${{ inputs.version }}"
           latest: true
           commitish: ${{ steps.commit.outputs.commit_sha1 }}
           token: ${{ secrets.GITHUB_TOKEN }}
+
+  chart-release:
+    if: ${{ inputs.publish }}
+    uses: ./.github/workflows/release.yaml
+    secrets: inherit
+    needs: [github-release]

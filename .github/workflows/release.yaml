@@ -1,8 +1,9 @@
 name: Release Charts
 
 on:
+  workflow_call: {}
   release:
-    types: [published, released]
+    types: [published]
 
 jobs:
   release:
