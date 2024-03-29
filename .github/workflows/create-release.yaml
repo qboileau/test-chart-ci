@@ -1,5 +1,5 @@
 name: Create release
-run-name: ${{ inputs.publish && '' || 'Draft' }} Release created for ${{ inputs.chart }}:${{ inputs.version }} by @${{ github.actor }}
+run-name: ${{ inputs.publish == 'true' && '' || 'Draft' }} Release created for ${{ inputs.chart }}:${{ inputs.version }} by @${{ github.actor }}
 
 on:
   workflow_dispatch:
